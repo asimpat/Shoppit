@@ -1,53 +1,60 @@
-import React from 'react'
-import { FaCartShopping } from "react-icons/fa6";
-import { Link } from "react-router-dom"
-import styles from "./NavBar.css"
+import { Navbar, Nav, Container, Button } from "react-bootstrap";
+import { Link, useNavigate } from "react-router-dom";
+import "./NavBar.css";
+import NavBarLink from "./NavBarLink";
 
-const NavBar = () => {
+export default function NavBar() {
+  const user = localStorage.getItem("user");
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/");
+  };
+
   return (
-    <nav
-      className={`navbar navbar-expand-lg navbar-light bg-white shadow-sm py-3 ${styles.stickyNavbar}`}
-    >
-      <div className="container">
-        <Link className="navbar-brand fw-bold text-uppercase" to="/">
+    <Navbar bg="white" expand="lg" className="shadow-sm py-3 stickyNavbar">
+      <Container>
+        <Navbar.Brand as={Link} to="/" className="fw-bold text-uppercase">
           SHOPPIT
-        </Link>
-
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarContent"
-          aria-controls="navbarContent"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
-
-        <div className="collapse navbar-collapse" id="navbarContent">
-        <NavLink/>
-
-          <Link
-            to="/cart"
-            className={`btn btn-dark ms-3 rounded-pill position-relative ${styles.responsiveCart}`}
-          >
-            <FaCartShopping />
-            <span
-              className="position-absolute top-0 start-100 translate-middle badge rounded-pill"
-              style={{
-                fontSize: "0.85rem",
-                padding: "0.5em 0.65em",
-                backgroundColor: "#6050DC",
-              }}
-            >
-              12
-            </span>
-          </Link>
-        </div>
-      </div>
-    </nav>
+        </Navbar.Brand>
+        <Navbar.Toggle aria-controls="main-navbar-nav" />
+        <Navbar.Collapse id="main-navbar-nav" className="justify-content-end">
+          <Nav>
+            <Nav.Link as={Link} to="/products">
+              Products
+            </Nav.Link>
+            {user ? (
+              <>
+                <Nav.Link as={Link} to="/profile">
+                  Profile
+                </Nav.Link>
+                <Button
+                  variant="outline-dark"
+                  className="ms-2"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Nav.Link as={Link} to="/login">
+                  Login
+                </Nav.Link>
+                <Nav.Link as={Link} to="/register">
+                  Register
+                </Nav.Link>
+              </>
+            )}
+            <Button variant="dark" className="ms-3 rounded-circle">
+              <span role="img" aria-label="cart">
+                🛒
+              </span>
+            </Button>
+          </Nav>
+        </Navbar.Collapse>
+      </Container>
+    </Navbar>
   );
 }
-
-export default NavBar
