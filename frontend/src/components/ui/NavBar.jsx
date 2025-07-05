@@ -2,13 +2,14 @@ import { Navbar, Nav, Container, Button } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import "./NavBar.css";
 import NavBarLink from "./NavBarLink";
+import { useAuth } from "../../context/AuthContext";
 
 export default function NavBar() {
-  const user = localStorage.getItem("user");
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.clear();
+    logout();
     navigate("/");
   };
 

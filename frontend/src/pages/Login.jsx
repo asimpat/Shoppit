@@ -1,23 +1,31 @@
 import { Card, Form, Button, Container } from "react-bootstrap";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
   const [form, setForm] = useState({ username: "", password: "" });
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (form.username && form.password) {
-      localStorage.setItem("user", form.username);
-      navigate("/profile");
+    setLoading(true);
+    setError("");
+
+    const result = await login(form.username, form.password);
+
+    if (result.success) {
+      navigate("");
     } else {
-      setError("Invalid credentials");
+      setError(result.error);
     }
+    setLoading(false);
   };
 
   return (
@@ -49,8 +57,13 @@ export default function Login() {
                 required
               />
             </Form.Group>
-            <Button type="submit" variant="primary" className="w-100">
-              Login
+            <Button
+              type="submit"
+              variant="primary"
+              className="w-100"
+              disabled={loading}
+            >
+              {loading ? "Logging in..." : "Login"}
             </Button>
           </Form>
         </Card.Body>
