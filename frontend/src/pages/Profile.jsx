@@ -55,6 +55,7 @@ export default function Profile() {
                 alt="Profile"
               />
             </Col>
+            
           </Row>
           <Form onSubmit={handleSave}>
             <Form.Group className="mb-3">
