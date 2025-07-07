@@ -48,7 +48,7 @@ export default function Profile() {
           <Row className="mb-3 justify-content-center">
             <Col xs="auto">
               <Image
-                src={form.profilePicture || "https://via.placeholder.com/120"}
+                src={form.profilePicture}
                 roundedCircle
                 width={120}
                 height={120}
