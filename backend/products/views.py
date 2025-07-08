@@ -22,7 +22,6 @@ def productsViewAndCreate(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# before starting any project, make sure to customise user model before anything else
 
 @api_view(['GET'])
 def productDetailBySlug(request, slug):
@@ -33,3 +32,5 @@ def productDetailBySlug(request, slug):
         return Response(serializer.data)
     except Product.DoesNotExist:
         return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+# before starting any project, make sure to customise user model before anything else
