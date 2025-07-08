@@ -1,19 +1,18 @@
 import { useState, useEffect } from "react";
 import { Card, Row, Col, Container, Spinner, Alert } from "react-bootstrap";
-import api, { BASE_URL } from "../api/axios";
-
+import api from "../api/axios";
+import { useNavigate } from "react-router-dom";
 
 export default function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const response = await api.get("products/");
-        console.log("resss", response.data);
-        
         setProducts(response.data);
       } catch (err) {
         setError("Failed to load products.");
@@ -38,15 +37,18 @@ export default function Products() {
     );
 
   return (
-    <Container className="mt-5">
-      <h3 className="text-center mb-4">Our Products</h3>
+    <Container>
       <Row>
         {products.map((p) => (
           <Col md={3} sm={6} xs={12} key={p.id} className="mb-4">
-            <Card className="h-100 shadow product-card">
+            <Card
+              className="h-100 shadow product-card"
+              style={{ cursor: "pointer" }}
+              onClick={() => navigate(`/products/${p.slug}`)}
+            >
               <Card.Img
                 variant="top"
-                src={`${BASE_URL}${p.image}`}
+                src={`http://localhost:3000${p.image}`}
                 style={{ height: 180, objectFit: "cover" }}
               />
               <Card.Body className="text-center">

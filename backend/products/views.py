@@ -2,7 +2,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from .models import Product
-from .serializers import ProductSerializers
+from .serializers import ProductSerializers, DetailedProductSerializer
 
 
 @api_view(['GET', 'POST'])
@@ -23,3 +23,13 @@ def productsViewAndCreate(request):
 
 
 # before starting any project, make sure to customise user model before anything else
+
+@api_view(['GET'])
+def productDetailBySlug(request, slug):
+    try:
+        product = Product.objects.get(slug=slug)
+        serializer = DetailedProductSerializer(
+            product, context={'request': request})
+        return Response(serializer.data)
+    except Product.DoesNotExist:
+        return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
