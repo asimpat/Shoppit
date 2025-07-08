@@ -37,6 +37,7 @@ export default function ProductDetail() {
           
           setRelated(relRes.data.filter((p) => p.slug !== slug));
         }
+        
       } catch (err) {
         setError("Failed to load product.");
       } finally {
