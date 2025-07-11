@@ -35,6 +35,7 @@ class CartItem(models.Model):
         # Prevent duplicate products in cart
         unique_together = ('cart', 'product')
 
+
     def __str__(self):
         return f"{self.quantity} x {self.product.name} in {self.cart.user.username}'s cart"
 
