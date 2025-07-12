@@ -33,6 +33,7 @@ export default function Register() {
         componentRestrictions: { country: "ng" }, // optional, restricts to Nigeria
       }
     );
+    
 
     autocomplete.addListener("place_changed", () => {
       const place = autocomplete.getPlace();
@@ -156,6 +157,7 @@ export default function Register() {
                   />
                 </Form.Group>
               </Col>
+
               {/* <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Profile Picture URL</Form.Label>
