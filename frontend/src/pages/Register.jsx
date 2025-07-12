@@ -2,6 +2,7 @@ import { Card, Form, Button, Container, Row, Col } from "react-bootstrap";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useRef, useEffect } from "react";
 
 export default function Register() {
   const [form, setForm] = useState({
@@ -14,15 +15,56 @@ export default function Register() {
     state: "",
     address: "",
     phone: "",
-    profilePicture: "",
+    profilePicture: null,
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { register } = useAuth();
+  const cityRef = useRef(null);
 
-  const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
+  useEffect(() => {
+    if (!window.google) return;
+
+    const autocomplete = new window.google.maps.places.Autocomplete(
+      cityRef.current,
+      {
+        types: ["(cities)"],
+        componentRestrictions: { country: "ng" }, // optional, restricts to Nigeria
+      }
+    );
+
+    autocomplete.addListener("place_changed", () => {
+      const place = autocomplete.getPlace();
+      let selectedCity = "";
+      let selectedState = "";
+
+      place.address_components.forEach((component) => {
+        const types = component.types;
+        if (types.includes("locality")) {
+          selectedCity = component.long_name;
+        }
+        if (types.includes("administrative_area_level_1")) {
+          selectedState = component.long_name;
+        }
+      });
+
+      setForm((prevForm) => ({
+        ...prevForm,
+        city: selectedCity,
+        state: selectedState,
+      }));
+    });
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value, files } = e.target;
+    if (name === "profilePicture") {
+      setForm({ ...form, profilePicture: files[0] });
+    } else {
+      setForm({ ...form, [name]: value });
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,7 +72,13 @@ export default function Register() {
     setError("");
 
     if (form.username && form.email && form.password) {
-      const result = await register(form);
+      const formData = new FormData();
+
+      for (const key in form) {
+        formData.append(key, form[key]);
+      }
+
+      const result = await register(formData);
 
       if (result.success) {
         navigate("/profile");
@@ -99,6 +147,17 @@ export default function Register() {
               </Col>
               <Col md={6}>
                 <Form.Group className="mb-3">
+                  <Form.Label>Upload Profile Picture</Form.Label>
+                  <Form.Control
+                    name="profilePicture"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleChange}
+                  />
+                </Form.Group>
+              </Col>
+              {/* <Col md={6}>
+                <Form.Group className="mb-3">
                   <Form.Label>Profile Picture URL</Form.Label>
                   <Form.Control
                     name="profilePicture"
@@ -106,7 +165,7 @@ export default function Register() {
                     onChange={handleChange}
                   />
                 </Form.Group>
-              </Col>
+              </Col> */}
             </Row>
             <Row>
               <Col md={6}>
@@ -133,6 +192,25 @@ export default function Register() {
             <Form.Group className="mb-3">
               <Form.Label>City</Form.Label>
               <Form.Control
+                type="text"
+                placeholder="Search your city"
+                ref={cityRef}
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>State</Form.Label>
+              <Form.Control
+                type="text"
+                name="state"
+                value={form.state}
+                readOnly
+              />
+            </Form.Group>
+
+            {/* <Form.Group className="mb-3">
+              <Form.Label>City</Form.Label>
+              <Form.Control
                 name="city"
                 placeholder="Enter your city"
                 onChange={handleChange}
@@ -145,7 +223,7 @@ export default function Register() {
                 placeholder="Enter your state"
                 onChange={handleChange}
               />
-            </Form.Group>
+            </Form.Group> */}
             <Form.Group className="mb-3">
               <Form.Label>Address</Form.Label>
               <Form.Control

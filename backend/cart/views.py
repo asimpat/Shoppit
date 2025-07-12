@@ -25,35 +25,35 @@ def add_to_cart(request):
     if serializer.is_valid():
         product_id = serializer.validated_data['product_id']
         quantity = serializer.validated_data['quantity']
-
+        
         # Get or create cart for user
         cart, created = Cart.objects.get_or_create(user=request.user)
-
+        
         # Check if product exists
         try:
             product = Product.objects.get(id=product_id)
         except Product.DoesNotExist:
             return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
-
+        
         # Check if item already exists in cart
         cart_item, created = CartItem.objects.get_or_create(
             cart=cart,
             product=product,
             defaults={'quantity': quantity}
         )
-
+        
         if not created:
             # Item already exists, update quantity
             cart_item.quantity += quantity
             cart_item.save()
-
+        
         # Return updated cart
         cart_serializer = CartSerializer(cart)
         return Response({
             "message": "Item added to cart successfully",
             "cart": cart_serializer.data
         }, status=status.HTTP_200_OK)
-
+    
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -65,7 +65,7 @@ def update_cart_item(request, item_id):
         cart_item = CartItem.objects.get(id=item_id, cart__user=request.user)
     except CartItem.DoesNotExist:
         return Response({"error": "Cart item not found"}, status=status.HTTP_404_NOT_FOUND)
-
+    
     serializer = CartItemSerializer(cart_item, data=request.data, partial=True)
     if serializer.is_valid():
         serializer.save()
@@ -74,7 +74,7 @@ def update_cart_item(request, item_id):
             "message": "Cart item updated successfully",
             "cart": cart_serializer.data
         }, status=status.HTTP_200_OK)
-
+    
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -86,10 +86,10 @@ def remove_from_cart(request, item_id):
         cart_item = CartItem.objects.get(id=item_id, cart__user=request.user)
     except CartItem.DoesNotExist:
         return Response({"error": "Cart item not found"}, status=status.HTTP_404_NOT_FOUND)
-
+    
     cart = cart_item.cart
     cart_item.delete()
-
+    
     cart_serializer = CartSerializer(cart)
     return Response({
         "message": "Item removed from cart successfully",
