@@ -9,4 +9,3 @@ class OrderSerializer(serializers.ModelSerializer):
                   'payment_reference', 'created_at', 'updated_at']
         read_only_fields = [
             'id', 'status', 'payment_reference', 'created_at', 'updated_at', 'user']
-
