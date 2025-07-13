@@ -39,10 +39,14 @@ export const AuthProvider = ({ children }) => {
   const login = async (username, password) => {
     try {
       const response = await api.post("/login/", { username, password });
-      setToken(response.data.tokens.access);
-      setUser(response.data.user);
-      localStorage.setItem("token", response.data.tokens.access);
-      localStorage.setItem("refreshToken", response.data.tokens.refresh);
+      const { access, refresh } = response.data.tokens;
+
+      setToken(access);
+      localStorage.setItem("token", access);
+      localStorage.setItem("refreshToken", refresh);
+
+      await fetchUserProfile(); // ✅ get and set the user here
+
       return { success: true };
     } catch (error) {
       return {
@@ -55,10 +59,14 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       const response = await api.post("/register/", userData);
-      setToken(response.data.tokens.access);
-      setUser(response.data.user);
-      localStorage.setItem("token", response.data.tokens.access);
-      localStorage.setItem("refreshToken", response.data.tokens.refresh);
+      const { access, refresh } = response.data.tokens;
+
+      setToken(access);
+      localStorage.setItem("token", access);
+      localStorage.setItem("refreshToken", refresh);
+
+      await fetchUserProfile();
+
       return { success: true };
     } catch (error) {
       return {
@@ -76,6 +84,14 @@ export const AuthProvider = ({ children }) => {
   };
 
   const updateProfile = async (profileData) => {
+    // Remove profilePicture if it's null or not a File (i.e., a string)
+    if (
+      !profileData.profilePicture ||
+      typeof profileData.profilePicture === "string"
+    ) {
+      const { profilePicture, ...rest } = profileData;
+      profileData = rest;
+    }
     try {
       const response = await api.put("/profile/", profileData);
       setUser(response.data.user);

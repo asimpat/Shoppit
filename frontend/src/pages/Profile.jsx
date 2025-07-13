@@ -1,154 +1,200 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import {
-  Card,
+  Container,
   Form,
   Button,
-  Container,
   Row,
   Col,
+  Card,
   Image,
+  Spinner,
 } from "react-bootstrap";
+import * as Icon from "react-feather";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Profile() {
   const { user, updateProfile } = useAuth();
-  const [form, setForm] = useState(user || {});
+  const [form, setForm] = useState({});
   const [editing, setEditing] = useState(false);
-  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    if (user) setForm(user);
+  }, [user]);
 
   if (!user) {
-    return <div>Loading...</div>;
+    return (
+      <Container
+        className="d-flex justify-content-center align-items-center"
+        style={{ minHeight: "80vh" }}
+      >
+        <Spinner animation="border" variant="primary" />
+      </Container>
+    );
   }
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleEdit = () => setEditing(true);
+  const handleEdit = () => {
+    setEditing(true);
+  };
+
+  const handleCancel = () => {
+    setForm(user); // Reset form
+    setEditing(false);
+  };
 
   const handleSave = async (e) => {
     e.preventDefault();
     const result = await updateProfile(form);
     if (result.success) {
-      setMessage("Profile updated successfully!");
+      toast.success("Profile updated successfully!");
       setEditing(false);
     } else {
-      setMessage("Update failed.");
+      toast.error("Update failed. Try again.");
     }
   };
 
   return (
-    <Container
-      className="d-flex justify-content-center align-items-center"
-      style={{ minHeight: "70vh" }}
-    >
-      <Card style={{ minWidth: 400 }} className="p-4 shadow">
-        <Card.Body>
-          <Card.Title className="mb-3 text-center">My Profile</Card.Title>
-          <Row className="mb-3 justify-content-center">
-            <Col xs="auto">
+    <Container className="py-5">
+      <Card className="shadow-lg border-0">
+        <Card.Body className="p-4">
+          <Row>
+            <Col xs={10} className="text-center mb-4">
               <Image
-                src={form.profilePicture}
+                src={
+                  form.profilePicture
+                    ? form.profilePicture.startsWith("http")
+                      ? form.profilePicture
+                      : form.profilePicture.startsWith("/")
+                      ? `http://localhost:3000${form.profilePicture}`
+                      : `http://localhost:3000/media/${form.profilePicture}`
+                    : "/images/headerImage.png"
+                }
                 roundedCircle
-                width={120}
-                height={120}
+                width={110}
+                height={110}
                 alt="Profile"
+                className="mb-2"
+                style={{ objectFit: "cover", border: "3px solid #ccc" }}
               />
+              <h5 className="mb-0">
+                {form.firstName} {form.lastName}
+              </h5>
+              <small className="text-muted">{form.email}</small>
             </Col>
-            
+            <Col
+              xs={2}
+              className="d-flex justify-content-end align-items-start"
+            >
+              {!editing && (
+                <Icon.Edit
+                  color="blue"
+                  style={{ cursor: "pointer" }}
+                  onClick={handleEdit}
+                  size={22}
+                  title="Edit Profile"
+                />
+              )}
+            </Col>
           </Row>
+
           <Form onSubmit={handleSave}>
-            <Form.Group className="mb-3">
-              <Form.Label>Username</Form.Label>
-              <Form.Control
-                name="username"
-                value={form.username || ""}
-                disabled
-                readOnly
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Email</Form.Label>
-              <Form.Control
-                name="email"
-                value={form.email || ""}
-                disabled
-                readOnly
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>First Name</Form.Label>
-              <Form.Control
-                name="firstName"
-                value={form.firstName || ""}
-                onChange={handleChange}
-                disabled={!editing}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Last Name</Form.Label>
-              <Form.Control
-                name="lastName"
-                value={form.lastName || ""}
-                onChange={handleChange}
-                disabled={!editing}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>City</Form.Label>
-              <Form.Control
-                name="city"
-                value={form.city || ""}
-                onChange={handleChange}
-                disabled={!editing}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>State</Form.Label>
-              <Form.Control
-                name="state"
-                value={form.state || ""}
-                onChange={handleChange}
-                disabled={!editing}
-              />
-            </Form.Group>
+            <Row>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>First Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="firstName"
+                    value={form.firstName || ""}
+                    onChange={handleChange}
+                    disabled={!editing}
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Last Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="lastName"
+                    value={form.lastName || ""}
+                    onChange={handleChange}
+                    disabled={!editing}
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+
+            <Row>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>City</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="city"
+                    value={form.city || ""}
+                    onChange={handleChange}
+                    disabled={!editing}
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>State</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="state"
+                    value={form.state || ""}
+                    onChange={handleChange}
+                    disabled={!editing}
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+
             <Form.Group className="mb-3">
               <Form.Label>Address</Form.Label>
               <Form.Control
+                type="text"
                 name="address"
                 value={form.address || ""}
                 onChange={handleChange}
                 disabled={!editing}
               />
             </Form.Group>
+
             <Form.Group className="mb-3">
               <Form.Label>Phone</Form.Label>
               <Form.Control
+                type="tel"
                 name="phone"
                 value={form.phone || ""}
                 onChange={handleChange}
                 disabled={!editing}
               />
             </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Profile Picture URL</Form.Label>
-              <Form.Control
-                name="profilePicture"
-                value={form.profilePicture || ""}
-                onChange={handleChange}
-                disabled={!editing}
-              />
-            </Form.Group>
-            {message && <div className="mb-2 text-success">{message}</div>}
-            {!editing ? (
-              <Button variant="primary" onClick={handleEdit} className="w-100">
-                Edit Profile
-              </Button>
-            ) : (
-              <Button type="submit" variant="success" className="w-100">
-                Save Changes
-              </Button>
-            )}
+
+            <div className="d-flex gap-3">
+              {editing ? (
+                <>
+                  <Button type="submit" variant="success" className="w-100">
+                    Save Changes
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onClick={handleCancel}
+                    className="w-100"
+                  >
+                    Cancel
+                  </Button>
+                </>
+              ) : null}
+            </div>
           </Form>
         </Card.Body>
       </Card>

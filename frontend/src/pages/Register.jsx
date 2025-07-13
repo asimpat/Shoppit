@@ -23,40 +23,7 @@ export default function Register() {
   const { register } = useAuth();
   const cityRef = useRef(null);
 
-  useEffect(() => {
-    if (!window.google) return;
-
-    const autocomplete = new window.google.maps.places.Autocomplete(
-      cityRef.current,
-      {
-        types: ["(cities)"],
-        componentRestrictions: { country: "ng" }, // optional, restricts to Nigeria
-      }
-    );
-    
-
-    autocomplete.addListener("place_changed", () => {
-      const place = autocomplete.getPlace();
-      let selectedCity = "";
-      let selectedState = "";
-
-      place.address_components.forEach((component) => {
-        const types = component.types;
-        if (types.includes("locality")) {
-          selectedCity = component.long_name;
-        }
-        if (types.includes("administrative_area_level_1")) {
-          selectedState = component.long_name;
-        }
-      });
-
-      setForm((prevForm) => ({
-        ...prevForm,
-        city: selectedCity,
-        state: selectedState,
-      }));
-    });
-  }, []);
+  const [citySuggestions, setCitySuggestions] = useState([]);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -65,6 +32,43 @@ export default function Register() {
     } else {
       setForm({ ...form, [name]: value });
     }
+
+    if (name === "city") {
+      fetchCitySuggestions(value);
+    }
+  };
+
+  const fetchCitySuggestions = async (query) => {
+    if (!query) {
+      setCitySuggestions([]);
+      return;
+    }
+
+    const url = `https://nominatim.openstreetmap.org/search?city=${query}&country=Nigeria&format=json&addressdetails=1`;
+
+    const res = await fetch(url, {
+      headers: {
+        "User-Agent": "React App",
+      },
+    });
+
+    const data = await res.json();
+
+    const suggestions = data.map((item) => ({
+      city: item.address.city || item.address.town || item.display_name,
+      state: item.address.state || "",
+    }));
+
+    setCitySuggestions(suggestions);
+  };
+
+  const handleCitySelect = (suggestion) => {
+    setForm((prev) => ({
+      ...prev,
+      city: suggestion.city,
+      state: suggestion.state,
+    }));
+    setCitySuggestions([]);
   };
 
   const handleSubmit = async (e) => {
@@ -191,22 +195,47 @@ export default function Register() {
                 </Form.Group>
               </Col>
             </Row>
-            <Form.Group className="mb-3">
+            <Form.Group className="mb-3" style={{ position: "relative" }}>
               <Form.Label>City</Form.Label>
               <Form.Control
-                type="text"
-                placeholder="Search your city"
-                ref={cityRef}
+                name="city"
+                placeholder="Start typing your city"
+                onChange={handleChange}
+                value={form.city}
+                autoComplete="off"
               />
+              {citySuggestions.length > 0 && (
+                <div
+                  style={{
+                    position: "absolute",
+                    zIndex: 1000,
+                    backgroundColor: "white",
+                    border: "1px solid #ccc",
+                    width: "100%",
+                    maxHeight: "150px",
+                    overflowY: "auto",
+                  }}
+                >
+                  {citySuggestions.map((suggestion, index) => (
+                    <div
+                      key={index}
+                      onClick={() => handleCitySelect(suggestion)}
+                      style={{ padding: "8px", cursor: "pointer" }}
+                    >
+                      {suggestion.city}, {suggestion.state}
+                    </div>
+                  ))}
+                </div>
+              )}
             </Form.Group>
 
             <Form.Group className="mb-3">
               <Form.Label>State</Form.Label>
               <Form.Control
-                type="text"
                 name="state"
                 value={form.state}
                 readOnly
+                placeholder="Auto-filled state"
               />
             </Form.Group>
 

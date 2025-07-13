@@ -6,16 +6,23 @@ User = get_user_model()
 
 
 class RegisterSerializer(serializers.ModelSerializer):
+    profilePicture = serializers.ImageField(required=False)
+
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'firstName',
-                  'lastName', 'city', 'state', 'address', 'phone', 'profilePicture']
+        fields = [
+            'username', 'email', 'password',
+            'firstName', 'lastName',
+            'city', 'state', 'address',
+            'phone', 'profilePicture'
+        ]
+        extra_kwargs = {
+            'password': {'write_only': True}
+        }
 
     def create(self, validated_data):
-        validated_data['password'] = make_password(
-            validated_data['password'])  # Hash the password
+        validated_data['password'] = make_password(validated_data['password'])
         return super().create(validated_data)
-
 
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
