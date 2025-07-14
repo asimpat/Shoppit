@@ -84,7 +84,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const updateProfile = async (profileData) => {
-    // Remove profilePicture if it's null or not a File (i.e., a string)
+   
     if (
       !profileData.profilePicture ||
       typeof profileData.profilePicture === "string"

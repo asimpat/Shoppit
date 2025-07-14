@@ -1,3 +1,4 @@
+from decouple import config
 from datetime import timedelta
 from pathlib import Path
 
@@ -156,3 +157,7 @@ MEDIA_ROOT = BASE_DIR/'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'shopapp.CustomUser'
+
+
+PAYSTACK_SECRET_KEY = config("PAYSTACK_SECRET_KEY")
+PAYSTACK_PUBLIC_KEY = config("PAYSTACK_PUBLIC_KEY")
