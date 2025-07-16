@@ -6,6 +6,11 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Order
 from .serializers import OrderSerializer
+import uuid
+from django.urls import reverse
+from .paystack import checkout
+from django.contrib import messages
+from ..products import Product
 
 
 @api_view(['POST'])
@@ -37,28 +42,7 @@ def order_detail(request, order_id):
     return Response(serializer.data)
 
 
-@api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def verify_payment(request):
-    reference = request.data.get('reference')
-    if not reference:
-        return Response({'error': 'No payment reference provided'}, status=status.HTTP_400_BAD_REQUEST)
-    try:
-        order = Order.objects.get(
-            payment_reference=reference, user=request.user)
-    except Order.DoesNotExist:
-        return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
+def create_paystack_checkout_session(request, product_id):
+    product = Product.objects.get(id=product_id)
 
-    headers = {
-        "Authorization": f"Bearer {settings.PAYSTACK_SECRET_KEY}",
-    }
-    url = f"https://api.paystack.co/transaction/verify/{reference}"
-    r = requests.get(url, headers=headers)
-    result = r.json()
-
-    if result['status'] and result['data']['status'] == 'success':
-        order.status = 'paid'
-        order.save()
-        return Response({'message': 'Payment verified and order updated!'})
-    else:
-        return Response({'error': 'Payment not verified'}, status=status.HTTP_400_BAD_REQUEST)

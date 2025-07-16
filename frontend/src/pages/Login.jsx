@@ -21,7 +21,7 @@ export default function Login() {
     const result = await login(form.username, form.password);
 
     if (result.success) {
-      navigate("");
+      navigate("/");
     } else {
       setError(result.error);
     }
