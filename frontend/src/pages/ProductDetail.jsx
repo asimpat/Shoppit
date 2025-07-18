@@ -10,6 +10,7 @@ import {
   Alert,
 } from "react-bootstrap";
 import api from "../api/axios";
+import { useCart } from "../context/CartContext";
 
 export default function ProductDetail() {
   const { slug } = useParams();
@@ -18,13 +19,14 @@ export default function ProductDetail() {
   const [related, setRelated] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const { addToCart } = useCart();
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         const response = await api.get(`/products/${slug}/`);
         console.log("response", response);
-        
+
         setProduct(response.data);
 
         // Fetch related products (same category, excluding current)
@@ -34,10 +36,9 @@ export default function ProductDetail() {
           );
 
           console.log("related", relRes);
-          
+
           setRelated(relRes.data.filter((p) => p.slug !== slug));
         }
-        
       } catch (err) {
         setError("Failed to load product.");
       } finally {
@@ -48,7 +49,7 @@ export default function ProductDetail() {
   }, [slug]);
 
   const handleAddToCart = () => {
-    // Implement your add-to-cart logic here
+    addToCart(product);
     alert("Added to cart!");
   };
 

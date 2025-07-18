@@ -3,10 +3,12 @@ import { Link, useNavigate } from "react-router-dom";
 import "./NavBar.css";
 import NavBarLink from "./NavBarLink";
 import { useAuth } from "../../context/AuthContext";
+import { useCart } from "../../context/CartContext";
 
 export default function NavBar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { cart } = useCart();
 
   const handleLogout = () => {
     logout();
@@ -48,10 +50,18 @@ export default function NavBar() {
                 </Nav.Link>
               </>
             )}
-            <Button variant="dark" className="ms-3 rounded-circle">
+            <Button
+              variant="dark"
+              className="ms-3 rounded-circle"
+              as={Link}
+              to="/cart"
+            >
               <span role="img" aria-label="cart">
                 🛒
               </span>
+              {cart.length > 0 && (
+                <span className="badge bg-primary">{cart.length}</span>
+              )}
             </Button>
           </Nav>
         </Navbar.Collapse>
