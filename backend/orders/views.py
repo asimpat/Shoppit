@@ -11,6 +11,7 @@ from django.urls import reverse
 from .paystack import checkout
 from django.contrib import messages
 from products.models import Product
+from django.shortcuts import redirect
 
 
 @api_view(['POST'])
@@ -82,10 +83,10 @@ def create_paystack_checkout_session(request, product_id):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def payment_success(request, product_id):
-    return Response({'message': 'Payment was successful!', 'product_id': product_id})
+    return redirect(f'{settings.FRONTEND_URL}/payment-success?product_id={product_id}')
 
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def payment_failed(request, product_id):
-    return Response({'message': 'Payment failed.', 'product_id': product_id})
+    return redirect(f'{settings.FRONTEND_URL}/payment-failed?product_id={product_id}')

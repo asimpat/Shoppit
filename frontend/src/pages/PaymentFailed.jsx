@@ -1,17 +1,18 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
-const PaymentFailed = () => {
+function PaymentFailed() {
+  const [searchParams] = useSearchParams();
+  const productId = searchParams.get("product_id");
+
   return (
     <div style={{ textAlign: "center", marginTop: "4rem" }}>
-      <h1 color="danger">Payment Failed</h1>
-      <p>
-        Unfortunately, your payment could not be processed. Please try again or
-        contact support if the issue persists.
-      </p>
+      <h1>Payment Failed</h1>
+      {/* <p>Product ID: {productId}</p> */}
+      {/* You can use productId to show more info or retry */}
       <Link to="/">Return to Home</Link>
     </div>
   );
-};
+}
 
 export default PaymentFailed;

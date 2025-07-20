@@ -1,6 +1,7 @@
 from decouple import config
 from datetime import timedelta
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -161,3 +162,5 @@ AUTH_USER_MODEL = 'shopapp.CustomUser'
 
 PAYSTACK_SECRET_KEY = config("PAYSTACK_SECRET_KEY")
 # PAYSTACK_PUBLIC_KEY = config("PAYSTACK_PUBLIC_KEY")
+
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:5173')
