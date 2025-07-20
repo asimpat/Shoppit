@@ -11,6 +11,8 @@ import {
 } from "react-bootstrap";
 import api from "../api/axios";
 import { useCart } from "../context/CartContext";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function ProductDetail() {
   const { slug } = useParams();
@@ -25,18 +27,11 @@ export default function ProductDetail() {
     const fetchProduct = async () => {
       try {
         const response = await api.get(`/products/${slug}/`);
-        console.log("response", response);
-
         setProduct(response.data);
-
-        // Fetch related products (same category, excluding current)
         if (response.data.category) {
           const relRes = await api.get(
             `/products/?category=${response.data.category}`
           );
-
-          console.log("related", relRes);
-
           setRelated(relRes.data.filter((p) => p.slug !== slug));
         }
       } catch (err) {
@@ -50,7 +45,7 @@ export default function ProductDetail() {
 
   const handleAddToCart = () => {
     addToCart(product);
-    alert("Added to cart!");
+    toast.success("Product added to cart");
   };
 
   if (loading)
