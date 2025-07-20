@@ -9,7 +9,7 @@ function PaymentSuccess() {
     <div style={{ textAlign: "center", marginTop: "4rem" }}>
       <h1>Payment Successful!</h1>
       {/* <p>Product ID: {productId}</p> */}
-      {/* You can use productId to fetch more details if needed */}
+     
       <Link to="/" className="btn btn-primary">
         Return to Home
       </Link>
