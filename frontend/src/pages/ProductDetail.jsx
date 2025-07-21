@@ -53,7 +53,7 @@ export default function ProductDetail() {
       <div className="text-center my-5">
         <Spinner animation="border" />
       </div>
-    );
+    ); 
   if (error)
     return (
       <Alert variant="danger" className="my-5 text-center">
