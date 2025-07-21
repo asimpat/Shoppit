@@ -59,6 +59,7 @@ export default function ProductDetail() {
       <Alert variant="danger" className="my-5 text-center">
         {error}
       </Alert>
+      
     );
   if (!product)
     return (
