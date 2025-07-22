@@ -12,3 +12,4 @@ urlpatterns = [
     path('payment-failed/<int:product_id>/',
          payment_failed, name='payment-failed'),
 ]
+
