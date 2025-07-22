@@ -32,6 +32,7 @@ def list_orders(request):
     return Response(serializer.data)
 
 
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def order_detail(request, order_id):
@@ -46,7 +47,7 @@ def order_detail(request, order_id):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_paystack_checkout_session(request, product_id):
-    # can check for error incase id is not in DB or is incorrect or id matches
+    # can check for error incase id is not in DB or is incorrect or id matches 
     product = Product.objects.get(id=product_id)
     purchase_id = f"purchase_{uuid.uuid4()}"
 
