@@ -17,6 +17,7 @@ def view_cart(request):
     return Response(serializer.data)
 
 
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def add_to_cart(request):
@@ -30,7 +31,7 @@ def add_to_cart(request):
         cart, created = Cart.objects.get_or_create(user=request.user)
         
         # Check if product exists
-        
+
         try:
             product = Product.objects.get(id=product_id)
         except Product.DoesNotExist:
