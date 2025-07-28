@@ -25,6 +25,7 @@ export const AuthProvider = ({ children }) => {
     // eslint-disable-next-line
   }, [token]);
 
+  
   const fetchUserProfile = async () => {
     try {
       const response = await api.get("/profile/");
