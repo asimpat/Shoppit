@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Card, Row, Col, Container, Spinner, Alert } from "react-bootstrap";
-import api from "../api/axios";
+import api, { BASE_URL } from "../api/axios";
 import { useNavigate } from "react-router-dom";
 
 export default function Products() {
