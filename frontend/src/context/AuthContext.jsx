@@ -11,6 +11,7 @@ export const useAuth = () => {
   return context;
 };
 
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem("token"));
@@ -25,7 +26,7 @@ export const AuthProvider = ({ children }) => {
     // eslint-disable-next-line
   }, [token]);
 
-  
+
   const fetchUserProfile = async () => {
     try {
       const response = await api.get("/profile/");
